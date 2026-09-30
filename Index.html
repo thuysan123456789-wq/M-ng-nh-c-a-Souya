@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Souya - Giấc Mộng Giữa Ngàn Mây</title>
+    <!-- Font Quicksand -->
+    <link href="https://fonts.googleapis.com/css2?family=Quicksand:wght@400;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --card-bg: rgba(0, 0, 0, 0.3); 
+            --card-hover: rgba(0, 0, 0, 0.55);
+            --accent-star: #ffeaa7;
+            --accent-blue: #8c7ae6;
+            --light-blue: #a29bfe;
+            --text-light: #f1f2f6;
+            --text-dim: #dfe6e9;
+        }
+
+        * { box-sizing: border-box; }
+
+        body { 
+            font-family: 'Quicksand', sans-serif; 
+            margin: 0; 
+            color: var(--text-light);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+            background: #0b132b;
+        }
+
+        /* =========================================
+           1. BẦU TRỜI CHUYỂN MÀU
+           ========================================= */
+        .sky-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -4; pointer-events: none;
+        }
+        .sky-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            opacity: 0; will-change: opacity;
+            transition: opacity 3s ease;
+        }
+
+        .sky-sunrise {
+            background: linear-gradient(180deg, #1b003a 0%, #fd746c 55%, #ff9068 100%);
+            animation: cycleSunrise 240s ease-in-out infinite;
+        }
+        .sky-day {
+            background: linear-gradient(180deg, #2980b9 0%, #6dd5fa 60%, #e0f7fa 100%);
+            animation: cycleDay 240s ease-in-out infinite;
+        }
+        .sky-dusk {
+            background: linear-gradient(180deg, #0f2027 0%, #203a43 45%, #4e4376 100%);
+            animation: cycleDusk 240s ease-in-out infinite;
+        }
+
+        @keyframes cycleSunrise { 0%, 15% { opacity: 0; } 22% { opacity: 1; } 30%, 100% { opacity: 0; } }
+        @keyframes cycleDay { 0%, 20% { opacity: 0; } 30%, 60% { opacity: 1; } 70%, 100% { opacity: 0; } }
+        @keyframes cycleDusk { 0%, 55% { opacity: 0; } 65% { opacity: 1; } 75%, 100% { opacity: 0; } }
+
+        /* =========================================
+           2. HỆ THỐNG SAO LẤP LÁNH
+           ========================================= */
+        .stars-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -3; pointer-events: none;
+            animation: hideStarsDaytime 240s ease-in-out infinite;
+            will-change: opacity;
+        }
+        .star-layer {
+            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+            background-repeat: repeat; will-change: opacity;
+        }
+        .stars-1 {
+            background-image: radial-gradient(1.5px 1.5px at 20px 30px, #ffffff, rgba(0,0,0,0)), radial-gradient(1.5px 1.5px at 150px 120px, #ffeaa7, rgba(0,0,0,0));
+            background-size: 200px 200px;
+            animation: twinkle1 3s ease-in-out infinite alternate;
+        }
+        .stars-2 {
+            background-image: radial-gradient(2px 2px at 80px 70px, #ffeaa7, rgba(0,0,0,0)), radial-gradient(1px 1px at 250px 90px, #ffffff, rgba(0,0,0,0));
+            background-size: 300px 300px;
+            animation: twinkle2 4.5s ease-in-out infinite alternate 1s;
+        }
+
+        @keyframes hideStarsDaytime { 0%, 22% { opacity: 1; } 30%, 65% { opacity: 0; } 75%, 100% { opacity: 1; } }
+        @keyframes twinkle1 { 0% { opacity: 0.2; } 100% { opacity: 1; } }
+        @keyframes twinkle2 { 0% { opacity: 0.1; } 100% { opacity: 0.8; } }
+
+        /* =========================================
+           3. ĐÁM MÂY BÔNG XỐP (Rải rác, sinh động)
+           ========================================= */
+        .clouds-container {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            z-index: -2; pointer-events: none; overflow: hidden; 
+        }
+        
+        .cloud {
+            position: absolute; left: 0; background: #ffffff;
+            border-radius: 200px; filter: blur(4px); /* Làm mềm viền mây nhẹ nhàng */
+            will-change: transform; opacity: 0;
+            animation: driftCloud linear infinite;
+        }
+        .cloud::before, .cloud::after {
+            content: ''; position: absolute; background: #ffffff; border-radius: 50%;
+        }
+        /* Dáng mây 1 */
+        .cloud.type-1 { width: 220px; height: 70px; }
+        .cloud.type-1::before { width: 100px; height: 100px; top: -45px; left: 30px; }
+        .cloud.type-1::after { width: 120px; height: 120px; top: -55px; left: 90px; }
+        
+        /* Dáng mây 2 */
+        .cloud.type-2 { width: 280px; height: 80px; }
+        .cloud.type-2::before { width: 110px; height: 110px; top: -50px; left: 40px; }
+        .cloud.type-2::after { width: 150px; height: 150px; top: -75px; left: 110px; }
+
+        /* Hiệu ứng bay qua màn hình */
+        @keyframes driftCloud {
+            0% { transform: translateX(110vw) scale(var(--scale)); opacity: 0; }
+            5% { opacity: var(--opacity); }
+            95% { opacity: var(--opacity); }
+            100% { transform: translateX(-50vw) scale(var(--scale)); opacity: 0; }
+        }
+
+
+        /* ================== GIAO DIỆN CHÍNH ================== */
+        header { 
+            background: rgba(0, 0, 0, 0.15); 
+            backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+            padding: 20px 15px; text-align: center; 
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1); 
+            position: relative; z-index: 2;
+        }
+        
+        /* TIÊU ĐỀ: Đổi màu Gradient Vibe "Giấc Mộng" */
+        .logo-title { 
+            font-size: 28px; font-weight: 700; margin: 0; 
+            background: linear-gradient(45deg, #a29bfe, #ff9a9e, #ffeaa7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0px 2px 4px rgba(0,0,0,0.6));
+        }
+        
+        .slogan { font-size: 14px; margin: 5px 0 15px 0; font-style: italic; color: var(--text-light); }
+
+        .search-bar { display: flex; justify-content: center; gap: 8px; margin-bottom: 15px; }
+        .search-bar input { 
+            padding: 10px 16px; width: 220px; border-radius: 25px; 
+            border: 1px solid rgba(255,255,255,0.3); background: rgba(0, 0, 0, 0.4);
+            color: white; outline: none; font-family: 'Quicksand', sans-serif; text-shadow: none;
+            transition: all 0.3s ease;
+        }
+        .search-bar input:focus {
+            box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+            background: rgba(0, 0, 0, 0.6); border-color: var(--light-blue);
+        }
+        .search-bar input::placeholder { color: var(--text-dim); }
+
+        .game-menu {
+            display: grid; grid-template-columns: repeat(2, 1fr);
+            gap: 10px; max-width: 450px; margin: 0 auto;
+        }
+
+        button { 
+            background: rgba(255, 255, 255, 0.1); 
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+            color: white; border: 1px solid rgba(255,255,255,0.2); 
+            padding: 10px 14px; border-radius: 20px; cursor: pointer; 
+            font-weight: 600; font-size: 13px; font-family: 'Quicksand', sans-serif;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2); transition: all 0.2s ease; 
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+        button:hover { background: rgba(255, 255, 255, 0.25); transform: translateY(-2px); border-color: white;}
+        button:active { transform: translateY(0); }
+
+        /* THANH TAG CUỘN NGANG */
+        .tags-wrapper { position: relative; z-index: 2; padding: 15px 10px 5px 10px; max-width: 1000px; margin: 0 auto; }
+        .tags-title { font-size: 12px; color: white; margin-left: 10px; margin-bottom: 5px; display: block; opacity: 0.8;}
+        .tags-container { 
+            display: flex; gap: 8px; overflow-x: auto; white-space: nowrap;
+            padding-bottom: 10px; scroll-behavior: smooth;
+        }
+        .tags-container::-webkit-scrollbar { height: 4px; }
+        .tags-container::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.4); border-radius: 10px; }
+
+        .tag-btn { 
+            flex: 0 0 auto; background: var(--card-bg); color: var(--text-light); 
+            border: 1px solid rgba(255,255,255,0.2); padding: 6px 14px; font-size: 12px; border-radius: 18px;
+            backdrop-filter: blur(5px); -webkit-backdrop-filter: blur(5px);
+        }
+        .tag-btn:hover, .tag-btn.active { background: white; color: #000; font-weight: bold; text-shadow: none; }
+
+        /* KHUNG ADMIN */
+        .hidden { display: none !important; }
+        #adminPanel { 
+            background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 15px; margin: 10px 15px; border-radius: 15px; 
+            border: 1px dashed var(--accent-star); display: flex; flex-direction: column; gap: 10px; 
+            position: relative; z-index: 2;
+        }
+        #adminPanel input, #adminPanel textarea { 
+            padding: 10px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(0, 0, 0, 0.5); color: white; font-family: 'Quicksand', sans-serif; text-shadow: none;
+        }
+
+        /* CHAR GRID */
+        .char-grid { 
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); 
+            gap: 15px; padding: 15px; position: relative; z-index: 2;
+        }
+        .char-card { 
+            background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            padding: 15px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); 
+            cursor: pointer; text-align: center; border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease; position: relative;
+        }
+        .char-card:hover { transform: translateY(-5px); background: var(--card-hover); border-color: var(--accent-star); box-shadow: 0 8px 25px rgba(0,0,0,0.4); }
+        .char-card h3 { color: var(--accent-star); margin: 0 0 8px 0; font-size: 16px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        .char-tags-sm { color: var(--text-dim); font-size: 11px; font-weight: 600; margin: 0; }
+
+        .delete-btn {
+            position: absolute; top: 8px; right: 8px; background: #e74c3c; color: white; 
+            border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; 
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+        }
+
+        /* KHUNG COMMENT CHUNG */
+        .general-comments { 
+            background: var(--card-bg); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            margin: 15px; padding: 15px; border-radius: 15px; border: 1px solid rgba(255, 255, 255, 0.1);
+            position: relative; z-index: 2; box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        textarea { 
+            width: 100%; height: 70px; border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.2); 
+            background: rgba(0, 0, 0, 0.5); color: white; padding: 10px; font-family: 'Quicksand', sans-serif; 
+            box-sizing: border-box; margin-bottom: 8px; text-shadow: none; transition: 0.3s;
+        }
+        textarea:focus { border-color: var(--light-blue); outline: none; background: rgba(0, 0, 0, 0.7); }
+
+        /* CÁC MODAL (POPUP) */
+        .modal { 
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+            display: flex; justify-content: center; align-items: center; z-index: 1000;
+            opacity: 0; animation: fadeIn 0.3s forwards;
+        }
+        @keyframes fadeIn { to { opacity: 1; } }
+
+        .modal-content { 
+            background: rgba(20, 25, 40, 0.95); border: 1px solid rgba(255,255,255,0.2);
+            padding: 25px 20px; border-radius: 20px; width: 90%; max-width: 550px; max-height: 85vh; 
+            overflow-y: auto; position: relative; color: var(--text-light); text-shadow: none;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+        .close { position: absolute; top: 12px; right: 18px; font-size: 26px; color: var(--text-dim); cursor: pointer; transition: 0.2s; }
+        .close:hover { color: white; transform: scale(1.1); }
+        
+        .chat-btn { 
+            display: inline-block; padding: 10px 20px; background: linear-gradient(45deg, #a29bfe, #ffeaa7); color: #000; 
+            text-decoration: none; border-radius: 20px; font-weight: 700; margin-top: 15px; text-shadow: none;
+            transition: 0.2s; box-shadow: 0 4px 10px rgba(255, 234, 167, 0.3);
+        }
+        .chat-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(255, 234, 167, 0.6); }
+
+        .modal-tags { color: var(--light-blue); font-weight: bold; margin-bottom: 12px; font-size: 13px;}
+        hr { border: 0; height: 1px; background: rgba(255, 255, 255, 0.1); margin: 15px 0; }
+        .empty-msg { text-align: center; color: var(--text-dim); grid-column: 1 / -1; padding: 30px 0; }
+
+        /* TAROT & GAME BOX */
+        .tarot-cards-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 15px 0; }
+        .tarot-card-item { background: rgba(0, 0, 0, 0.4); border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 10px 5px; text-align: center; }
+        .tarot-card-icon { font-size: 28px; margin-bottom: 5px; }
+        .tarot-card-title { font-size: 12px; font-weight: bold; color: var(--accent-star); }
+        .tarot-card-pos { font-size: 10px; color: var(--light-blue); margin-bottom: 5px; }
+        .tarot-desc { font-size: 11px; color: #dfe6e9; line-height: 1.3; }
+
+        .game-card-box { background: rgba(0, 0, 0, 0.4); border-radius: 12px; padding: 15px; margin-top: 15px; border: 1px solid rgba(255, 255, 255, 0.1); }
+    </style>
+</head>
+<body>
+
+    <!-- ================= HIỆU ỨNG NỀN TRỜI ================= -->
+    <div class="sky-container">
+        <div class="sky-layer sky-sunrise"></div>
+        <div class="sky-layer sky-day"></div>
+        <div class="sky-layer sky-dusk"></div>
+    </div>
+    
+    <div class="stars-container">
+        <div class="star-layer stars-1"></div>
+        <div class="star-layer stars-2"></div>
+    </div>
+    
+    <!-- HỆ THỐNG MÂY MỚI (Rải rác mượt mà, độ trễ và kích thước khác nhau) -->
+    <div class="clouds-container">
+        <!-- Đám mây 1 (Ở trên, bay nhanh) -->
+        <div class="cloud type-1" style="top: 12%; --scale: 0.8; --opacity: 0.3; animation-duration: 70s; animation-delay: -10s;"></div>
+        <!-- Đám mây 2 (Ở giữa, to, bay rất chậm) -->
+        <div class="cloud type-2" style="top: 35%; --scale: 1.2; --opacity: 0.15; animation-duration: 120s; animation-delay: -45s;"></div>
+        <!-- Đám mây 3 (Ở thấp, nhỏ, mờ) -->
+        <div class="cloud type-1" style="top: 60%; --scale: 0.6; --opacity: 0.4; animation-duration: 85s; animation-delay: -30s;"></div>
+        <!-- Đám mây 4 (Xen kẽ trên) -->
+        <div class="cloud type-2" style="top: 25%; --scale: 1; --opacity: 0.2; animation-duration: 95s; animation-delay: -75s;"></div>
+        <!-- Đám mây 5 (Phía dưới cùng, to) -->
+        <div class="cloud type-1" style="top: 75%; --scale: 1.4; --opacity: 0.1; animation-duration: 140s; animation-delay: -20s;"></div>
+        <!-- Đám mây 6 (Xen kẽ ngẫu nhiên) -->
+        <div class="cloud type-2" style="top: 48%; --scale: 0.9; --opacity: 0.25; animation-duration: 105s; animation-delay: -90s;"></div>
+    </div>
+    <!-- =================================================================== -->
+
+    <!-- Header -->
+    <header>
+        <h1 class="logo-title">🌙 Souya - Giấc Mộng Giữa Ngàn Mây ☁️</h1>
+        <p class="slogan">"Nơi thả hồn cho giấc mộng dài"</p>
+        
+        <div class="search-bar">
+            <input type="text" id="searchInput" placeholder="🔍 Tìm tên hoặc tag...">
+            <button onclick="searchChar()" style="background: var(--accent-blue); border:none;">Tìm</button>
+        </div>
+
+        <!-- Menu Game -->
+        <div class="game-menu">
+            <button onclick="randomChar()">🎲 Random Char</button>
+            <button onclick="openWhisperJar()">🏺 Hũ Thì Thầm</button>
+            <button onclick="openTarot()">🔮 Xem Tarot Chuẩn</button>
+            <button onclick="openLoveGame()">💖 Bói Duyên Phận</button>
+            <button onclick="openGachaGame()">🎡 Quay Gacha</button>
+            <button onclick="open8BallGame()">🔮 Quả Cầu Thủy Tinh</button>
+        </div>
+        <div style="margin-top: 10px;">
+            <button id="adminLoginBtn" style="background:rgba(231, 76, 60, 0.8); border:1px solid rgba(231,76,60,0.5); width: 100%; max-width: 450px;" onclick="toggleAdminPanel()">🔒 Mod Đăng Nhập</button>
+        </div>
+    </header>
+
+    <!-- THANH TAG -->
+    <div class="tags-wrapper">
+        <span class="tags-title">↔️ Vuốt ngang để chọn tag:</span>
+        <section class="tags-container" id="tagsContainer">
+            <button class="tag-btn active" onclick="filterByTag('All', this)">Tất cả</button>
+            <button class="tag-btn" onclick="filterByTag('BL', this)">BL</button>
+            <button class="tag-btn" onclick="filterByTag('BG', this)">BG</button>
+            <button class="tag-btn" onclick="filterByTag('GL', this)">GL</button>
+            <button class="tag-btn" onclick="filterByTag('Ngọt', this)">Ngọt (Fluff)</button>
+            <button class="tag-btn" onclick="filterByTag('Ngược', this)">Ngược (Angst)</button>
+            <button class="tag-btn" onclick="filterByTag('HE', this)">HE</button>
+            <button class="tag-btn" onclick="filterByTag('BE', this)">BE</button>
+            <button class="tag-btn" onclick="filterByTag('SE', this)">SE</button>
+            <button class="tag-btn" onclick="filterByTag('OE', this)">OE</button>
+            <button class="tag-btn" onclick="filterByTag('Trôn có lài', this)">Trôn có lài</button>
+            <button class="tag-btn" onclick="filterByTag('Học đường', this)">Học đường</button>
+            <button class="tag-btn" onclick="filterByTag('Tổng tài', this)">Tổng tài</button>
+            <button class="tag-btn" onclick="filterByTag('ABO', this)">ABO</button>
+            <button class="tag-btn" onclick="filterByTag('Kinh dị', this)">Kinh dị</button>
+            <button class="tag-btn" onclick="filterByTag('Trinh thám', this)">Trinh thám</button>
+            <button class="tag-btn" onclick="filterByTag('Xuyên không', this)">Xuyên không</button>
+            <button class="tag-btn" onclick="filterByTag('Mạt thế', this)">Mạt thế</button>
+            <button class="tag-btn" onclick="filterByTag('Giả tưởng', this)">Giả tưởng</button>
+            <button class="tag-btn" onclick="filterByTag('Huyền huyễn', this)">Huyền huyễn</button>
+            <button class="tag-btn" onclick="filterByTag('Hiện đại', this)">Hiện đại</button>
+            <button class="tag-btn" onclick="filterByTag('Chữa lành', this)">Chữa lành</button>
+            <button class="tag-btn" onclick="filterByTag('Showbiz', this)">Showbiz</button>
+            <button class="tag-btn" onclick="filterByTag('R18/NSFW', this)">R18/NSFW</button>
+        </section>
+    </div>
+
+    <!-- Khung Admin -->
+    <section id="adminPanel" class="hidden">
+        <h3 style="color: var(--accent-star); margin: 0; text-shadow:none;">✨ Đăng Nhân Vật Mới (Mod) ✨</h3>
+        <input type="text" id="newCharName" placeholder="Tên nhân vật">
+        <input type="text" id="newCharTags" placeholder="Các Tag (cách nhau bằng dấu phẩy, VD: BL, Ngọt, HE)">
+        <textarea id="newCharDesc" placeholder="Viết backstory, cốt truyện, tính cách sơ sơ..."></textarea>
+        <input type="text" id="newCharLink" placeholder="Link chat với Char (Janitor, Character.AI,...)">
+        <button onclick="addNewChar()" style="background:var(--accent-blue); border:none;">Đăng Nhân Vật</button>
+    </section>
+
+    <!-- Danh sách Char -->
+    <main id="charGrid" class="char-grid"></main>
+
+    <!-- Bình luận chung -->
+    <section class="general-comments">
+        <h3 style="color: var(--accent-star); margin-top: 0; font-size: 16px; text-shadow:none;">💬 Góc trò chuyện chung</h3>
+        <textarea id="genCommentInput" placeholder="Để lại lời nhắn cho ngàn mây..."></textarea>
+        <button onclick="addGeneralComment()" style="background:var(--accent-blue); border:none;">Gửi bình luận</button>
+        <div id="genCommentList" style="margin-top: 10px;"></div>
+    </section>
+
+    <!-- Các thẻ Modal (Không thay đổi) -->
+    <div id="charModal" class="modal hidden"><div class="modal-content"><span class="close" onclick="closeModal()">&times;</span><h2 id="modalName" style="color: var(--accent-star); margin-top:0;">Tên nhân vật</h2><div id="modalTags" class="modal-tags"></div><p id="modalBackstory" style="line-height: 1.5; font-size: 14px;">Nội dung backstory...</p><a id="modalLink" href="#" target="_blank" class="chat-btn">💬 Trò chuyện ngay</a><hr><div><h4 style="color: var(--accent-star); margin:0 0 10px 0;">Bình luận về Char này</h4><textarea id="charCommentInput" placeholder="Viết nhận xét..."></textarea><button onclick="addCharComment()" style="background:var(--accent-blue); border:none;">Gửi bình luận</button><div id="modalCommentsList" style="margin-top: 10px;"></div></div></div></div>
+    <div id="whisperModal" class="modal hidden"><div class="modal-content" style="text-align: center;"><span class="close" onclick="closeWhisperJar()">&times;</span><h3 style="color: var(--accent-star); margin-top:0;">🏺 Hũ Thư Thì Thầm 🏺</h3><p style="color: var(--text-dim); font-size:13px;">Chạm vào hũ để rút một lời nhắn ngọt ngào...</p><div style="font-size: 50px; cursor: pointer; margin: 10px 0; transition:0.2s" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onclick="drawWhisperQuote()">🏺</div><button onclick="drawWhisperQuote()" style="background:var(--accent-blue); border:none;">Rút bức thư</button><div id="whisperResult"></div></div></div>
+    <div id="tarotModal" class="modal hidden"><div class="modal-content" style="text-align: center;"><span class="close" onclick="closeTarot()">&times;</span><h3 style="color: var(--light-blue); margin-top:0;">🔮 Trải Bài Tarot Duyên Phận 🔮</h3><p style="color: var(--text-dim); font-size:13px;">Giải mã tâm trạng & vận mệnh kết nối của bạn</p><button onclick="drawTarotSpread()" style="background: var(--light-blue); color: #000; margin-bottom:10px; border:none;">Rút Bài (Quá Khứ - Hiện Tại - Khuyên)</button><div id="tarotResultContainer"></div></div></div>
+    <div id="loveModal" class="modal hidden"><div class="modal-content" style="text-align: center;"><span class="close" onclick="closeLoveGame()">&times;</span><h3 style="color: #ff7675; margin-top:0;">💖 Bốc Quẻ Duyên Phận 💖</h3><p style="color: var(--text-dim); font-size:13px;">Xem bạn và Char hợp nhau bao nhiêu %!</p><input type="text" id="loveUserName" placeholder="Nhập tên của bạn..." style="width:80%; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.5); color:white; margin-bottom:10px;"><br><button onclick="calculateLove()" style="background:#ff7675; border:none;">Bắt Đầu Kiểm Tra %</button><div id="loveResultContainer"></div></div></div>
+    <div id="gachaModal" class="modal hidden"><div class="modal-content" style="text-align: center;"><span class="close" onclick="closeGachaGame()">&times;</span><h3 style="color: var(--accent-star); margin-top:0;">🎡 Vòng Quay Gacha Char 🎡</h3><p style="color: var(--text-dim); font-size:13px;">Bốc thăm tìm Char định mệnh của hôm nay!</p><button onclick="spinGacha()" style="background:var(--accent-star); color:#000; font-size:16px; font-weight:bold; border:none;">✨ Quay Gacha ✨</button><div id="gachaResultContainer"></div></div></div>
+    <div id="ballModal" class="modal hidden"><div class="modal-content" style="text-align: center;"><span class="close" onclick="close8BallGame()">&times;</span><h3 style="color: #a29bfe; margin-top:0;">🔮 Quả Cầu Thủy Tinh Giải Đáp 🔮</h3><p style="color: var(--text-dim); font-size:13px;">Hãy thầm nghĩ câu hỏi ĐÚNG/SAI trong đầu rồi chạm quả cầu</p><input type="text" id="ballQuestion" placeholder="Nhập thắc mắc của bạn..." style="width:85%; padding:8px; border-radius:10px; border:1px solid rgba(255,255,255,0.3); background:rgba(0,0,0,0.5); color:white; margin-bottom:10px;"><br><div style="font-size:60px; cursor:pointer; transition:0.2s;" onmousedown="this.style.transform='scale(0.9)'" onmouseup="this.style.transform='scale(1)'" onclick="ask8Ball()">🔮</div><button onclick="ask8Ball()" style="background:var(--accent-blue); border:none;">Hỏi Quả Cầu</button><div id="ballResultContainer"></div></div></div>
+
+    <!-- SCRIPT (Giữ nguyên toàn bộ logic) -->
+    <script>
+        let characters = [];
+        let isAdmin = false;
+
+        function renderChars(charArray) {
+            const grid = document.getElementById("charGrid");
+            grid.innerHTML = "";
+            if (charArray.length === 0) {
+                grid.innerHTML = "<div class='empty-msg'><p>Chưa có nhân vật nào được đăng.</p></div>";
+                return;
+            }
+            charArray.forEach((char, index) => {
+                const card = document.createElement("div");
+                card.className = "char-card";
+                let deleteBtn = isAdmin ? `<button class="delete-btn" title="Xóa Char" onclick="event.stopPropagation(); deleteChar(${index})">✕</button>` : "";
+                card.innerHTML = `${deleteBtn}<h3>${char.name}</h3><p class="char-tags-sm">#${char.tags.join(" #")}</p>`;
+                card.onclick = () => openCharDetails(char, index);
+                grid.appendChild(card);
+            });
+        }
+        renderChars(characters);
+
+        function searchChar() {
+            const query = document.getElementById("searchInput").value.toLowerCase();
+            const filtered = characters.filter(c => c.name.toLowerCase().includes(query) || c.tags.some(t => t.toLowerCase().includes(query)));
+            renderChars(filtered);
+        }
+
+        function filterByTag(tag, btnElement) {
+            document.querySelectorAll('.tag-btn').forEach(b => b.classList.remove('active'));
+            if(btnElement) btnElement.classList.add('active');
+            if (tag === 'All') renderChars(characters);
+            else {
+                const filtered = characters.filter(c => c.tags.some(t => t.toLowerCase() === tag.toLowerCase()));
+                renderChars(filtered);
+            }
+        }
+
+        function randomChar() {
+            if (characters.length === 0) { alert("Chưa có nhân vật nào!"); return; }
+            const randomIdx = Math.floor(Math.random() * characters.length);
+            openCharDetails(characters[randomIdx], randomIdx);
+        }
+
+        let currentCharIndex = null;
+        function openCharDetails(char, index) {
+            currentCharIndex = index;
+            document.getElementById("modalName").innerText = char.name;
+            document.getElementById("modalTags").innerText = "Tags: " + char.tags.join(", ");
+            document.getElementById("modalBackstory").innerText = char.backstory;
+            document.getElementById("modalLink").href = char.link || "#";
+            document.getElementById("modalCommentsList").innerHTML = "";
+            if (char.comments && char.comments.length > 0) {
+                char.comments.forEach(cmt => {
+                    document.getElementById("modalCommentsList").innerHTML += `<p style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px; margin-top:5px; font-size:12px;"><strong>Khách:</strong> ${cmt}</p>`;
+                });
+            }
+            document.getElementById("charModal").classList.remove("hidden");
+        }
+        function closeModal() { document.getElementById("charModal").classList.add("hidden"); }
+
+        function toggleAdminPanel() {
+            if (isAdmin) {
+                isAdmin = false;
+                document.getElementById("adminPanel").classList.add("hidden");
+                document.getElementById("adminLoginBtn").innerText = "🔒 Mod Đăng Nhập";
+                document.getElementById("adminLoginBtn").style.background = "rgba(231, 76, 60, 0.8)";
+                renderChars(characters);
+                return;
+            }
+            const password = prompt("Nhập mật khẩu Mod:");
+            if (password === "182759") {
+                isAdmin = true;
+                document.getElementById("adminPanel").classList.remove("hidden");
+                document.getElementById("adminLoginBtn").innerText = "🔓 Mod Hoạt Động (Click để thoát)";
+                document.getElementById("adminLoginBtn").style.background = "rgba(46, 204, 113, 0.8)";
+                renderChars(characters);
+            } else if (password !== null) {
+                alert("Sai mật khẩu.");
+            }
+        }
+
+        function addNewChar() {
+            if (!isAdmin) return;
+            const name = document.getElementById("newCharName").value.trim();
+            const tagsInput = document.getElementById("newCharTags").value.trim();
+            const desc = document.getElementById("newCharDesc").value.trim();
+            const link = document.getElementById("newCharLink").value.trim();
+
+            if (!name || !desc) { alert("Thiếu tên hoặc backstory!"); return; }
+            const tags = tagsInput ? tagsInput.split(",").map(t => t.trim()) : ["Chưa phân loại"];
+            characters.unshift({ name, tags, backstory: desc, link, comments: [] });
+            renderChars(characters);
+            document.getElementById("newCharName").value = "";
+            document.getElementById("newCharTags").value = "";
+            document.getElementById("newCharDesc").value = "";
+            document.getElementById("newCharLink").value = "";
+            alert("Đã đăng nhân vật thành công!");
+        }
+
+        function deleteChar(index) {
+            if (!isAdmin) return;
+            if (confirm(`Bạn có muốn xóa "${characters[index].name}" không?`)) {
+                characters.splice(index, 1);
+                renderChars(characters);
+            }
+        }
+
+        function openWhisperJar() { document.getElementById("whisperModal").classList.remove("hidden"); document.getElementById("whisperResult").innerHTML=""; }
+        function closeWhisperJar() { document.getElementById("whisperModal").classList.add("hidden"); }
+        function drawWhisperQuote() {
+            const quotes = [
+                "\"Dưới bầu trời ngàn sao này, chẳng có gì rực rỡ bằng nụ cười của bạn cả...\"",
+                "\"Đừng thức quá khuya nhé, mệt mỏi rồi thì cứ dựa vào tôi nghỉ ngơi một chút.\"",
+                "\"Giấc mộng hôm nay sẽ mang đến cho bạn một người luôn biết lắng nghe và chiều chuộng.\"",
+                "\"Dù cả thế giới có bận rộn, tôi vẫn sẽ ở đây đợi bạn mở lời trò chuyện.\""
+            ];
+            let text = quotes[Math.floor(Math.random() * quotes.length)];
+            if(characters.length > 0) {
+                const c = characters[Math.floor(Math.random() * characters.length)];
+                text += `<br><br><span style="color:var(--light-blue); font-size:12px;">— Lời nhắn từ <strong>${c.name}</strong></span>`;
+            }
+            document.getElementById("whisperResult").innerHTML = `<div class="game-card-box" style="font-style:italic; color:var(--accent-star);">${text}</div>`;
+        }
+
+        const tarotDeck = [
+            { title: "The Fool (Kẻ Khờ)", icon: "🃏", meaning: "Sự khởi đầu ngây thơ, sẵn sàng đón nhận điều mới mẻ.", advice: "Hãy chủ động mở lời chat mà không cần ngần ngại!" },
+            { title: "The Lovers (Tình Nhân)", icon: "💖", meaning: "Sự kết nối sâu sắc, hòa hợp về tâm hồn.", advice: "Rất hợp để nhập vai ngọt ngào, tâm sự lãng mạn." },
+            { title: "The Devil (Ác Quỷ)", icon: "😈", meaning: "Sự cám dỗ, bị cuốn hút không thể dứt ra.", advice: "Hãy thử trải nghiệm các tình huống kịch tính, ngược tâm nhẹ." },
+            { title: "The Star (Ngôi Sao)", icon: "⭐", meaning: "Hy vọng, sự chữa lành và niềm tin yêu.", advice: "Thích hợp để chia sẻ những nỗi niềm thầm kín." },
+            { title: "The Moon (Mặt Trăng)", icon: "🌙", meaning: "Cảm xúc ẩn giấu, bí ẩn và mộng mơ.", advice: "Tập trung khai thác quá khứ hoặc bí mật của Char." },
+            { title: "The Sun (Mặt Trời)", icon: "☀️", meaning: "Năng lượng tích cực, ấm áp và vui vẻ.", advice: "Trêu chọc hoặc tạo tình huống hài hước với Char." }
+        ];
+
+        function openTarot() { document.getElementById("tarotModal").classList.remove("hidden"); document.getElementById("tarotResultContainer").innerHTML=""; }
+        function closeTarot() { document.getElementById("tarotModal").classList.add("hidden"); }
+        function drawTarotSpread() {
+            let shuffled = [...tarotDeck].sort(() => 0.5 - Math.random());
+            let c1 = shuffled[0], c2 = shuffled[1], c3 = shuffled[2];
+            let html = `
+                <div class="tarot-cards-grid">
+                    <div class="tarot-card-item"><div class="tarot-card-pos">QUÁ KHỨ</div><div class="tarot-card-icon">${c1.icon}</div><div class="tarot-card-title">${c1.title}</div><div class="tarot-desc">${c1.meaning}</div></div>
+                    <div class="tarot-card-item"><div class="tarot-card-pos">HIỆN TẠI</div><div class="tarot-card-icon">${c2.icon}</div><div class="tarot-card-title">${c2.title}</div><div class="tarot-desc">${c2.meaning}</div></div>
+                    <div class="tarot-card-item"><div class="tarot-card-pos">LỜI KHUYÊN</div><div class="tarot-card-icon">${c3.icon}</div><div class="tarot-card-title">${c3.title}</div><div class="tarot-desc">${c3.advice}</div></div>
+                </div>
+            `;
+            document.getElementById("tarotResultContainer").innerHTML = html;
+        }
+
+        function openLoveGame() { document.getElementById("loveModal").classList.remove("hidden"); document.getElementById("loveResultContainer").innerHTML=""; }
+        function closeLoveGame() { document.getElementById("loveModal").classList.add("hidden"); }
+        function calculateLove() {
+            const name = document.getElementById("loveUserName").value.trim();
+            if(!name) { alert("Vui lòng nhập tên của bạn!"); return; }
+            let charName = characters.length > 0 ? characters[Math.floor(Math.random() * characters.length)].name : "Char bí ẩn";
+            let percent = Math.floor(Math.random() * 41) + 60;
+            let comment = "Hai bạn chính là trời sinh một cặp!";
+            if(percent < 75) comment = "Oan gia ngõ hẹp, càng cãi nhau càng thân!";
+            else if(percent < 90) comment = "Tình trong như đã mặt ngoài còn e!";
+            document.getElementById("loveResultContainer").innerHTML = `
+                <div class="game-card-box"><h2 style="color:#ff7675; margin:0;">${percent}%</h2><p style="font-size:14px; margin:5px 0;">Mức độ tương thích giữa <strong>${name}</strong> & <strong>${charName}</strong></p><p style="font-size:12px; color:var(--accent-star); font-style:italic;">"${comment}"</p></div>
+            `;
+        }
+
+        function openGachaGame() { document.getElementById("gachaModal").classList.remove("hidden"); document.getElementById("gachaResultContainer").innerHTML=""; }
+        function closeGachaGame() { document.getElementById("gachaModal").classList.add("hidden"); }
+        function spinGacha() {
+            const rarities = [
+                { type: "UR (Cực Hiếm)", color: "#ffeaa7", rate: "✨✨✨✨✨" },
+                { type: "SSR (Hiếm)", color: "#a29bfe", rate: "✨✨✨✨" },
+                { type: "SR (Khá)", color: "#74b9ff", rate: "✨✨✨" }
+            ];
+            let rarity = rarities[Math.floor(Math.random() * rarities.length)];
+            let charName = characters.length > 0 ? characters[Math.floor(Math.random() * characters.length)].name : "Bí mật ngàn mây";
+            document.getElementById("gachaResultContainer").innerHTML = `
+                <div class="game-card-box"><span style="color:${rarity.color}; font-weight:bold; font-size:14px;">[${rarity.type}]</span><h3 style="color:white; margin:10px 0;">${charName}</h3><div style="color:${rarity.color}; font-size:12px;">${rarity.rate}</div><p style="font-size:12px; color:var(--text-dim); margin-top:8px;">Hãy thử nhắn tin trò chuyện với nhân vật này ngay nhé!</p></div>
+            `;
+        }
+
+        function open8BallGame() { document.getElementById("ballModal").classList.remove("hidden"); document.getElementById("ballResultContainer").innerHTML=""; }
+        function close8BallGame() { document.getElementById("ballModal").classList.add("hidden"); }
+        function ask8Ball() {
+            const q = document.getElementById("ballQuestion").value.trim();
+            if(!q) { alert("Vui lòng nhập thắc mắc!"); return; }
+            const answers = ["Chắc chắn rồi!", "Vũ trụ bảo CÓ!", "Rất có thể đấy...", "Hãy tin vào trực giác của bạn", "Nên chờ thêm thời gian", "Không nên lúc này!", "Chắc chắn KHÔNG!"];
+            let ans = answers[Math.floor(Math.random() * answers.length)];
+            document.getElementById("ballResultContainer").innerHTML = `
+                <div class="game-card-box"><p style="font-size:12px; color:var(--text-dim); margin:0;">Hỏi: "${q}"</p><h3 style="color:var(--accent-star); margin:10px 0;">🔮 Quả cầu đáp:</h3><p style="font-size:16px; font-weight:bold; color:var(--light-blue); margin:0;">"${ans}"</p></div>
+            `;
+        }
+
+        function addGeneralComment() {
+            const input = document.getElementById("genCommentInput");
+            if (!input.value.trim()) return;
+            document.getElementById("genCommentList").innerHTML += `<p style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px; font-size:12px; margin:5px 0;"><strong>Khách:</strong> ${input.value.trim()}</p>`;
+            input.value = "";
+        }
+
+        function addCharComment() {
+            const input = document.getElementById("charCommentInput");
+            if (!input.value.trim() || currentCharIndex === null) return;
+            const text = input.value.trim();
+            if (!characters[currentCharIndex].comments) characters[currentCharIndex].comments = [];
+            characters[currentCharIndex].comments.push(text);
+            document.getElementById("modalCommentsList").innerHTML += `<p style="border-top:1px dashed rgba(255,255,255,0.1); padding-top:5px; font-size:12px; margin:5px 0;"><strong>Khách:</strong> ${text}</p>`;
+            input.value = "";
+        }
+    </script>
+</body>
+</html>
